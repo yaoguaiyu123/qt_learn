@@ -5,6 +5,8 @@
 //UdpSocket在此创建
 #include <QWidget>
 #include <QUdpSocket>
+#include "server.h"
+#include "client.h"
 class QTcpSocket;
 enum MsgType { Msg,
     UsrEnter,
@@ -32,15 +34,21 @@ protected:
     QString getIp(); // 获取IP地址
     QString getUsername(); // 获取用户名
     QString getMessage();   //获取聊天消息
+    void hasPendingFile(QString usrname, QString srvaddr, QString clntaddr, QString filename);
+
 
 private:
     Ui::Widget *ui;
     QUdpSocket* udpSocket;
     qint64 port;
     QString username;
+    QString filename;
+    Server* srv;   //文件传输服务端
 private slots:
-    void sendButtonClicked();
+    void sendBtn_clicked();
     void processPendingDatagrams();
+    void getFileName(QString);
+    void sendTBtn_clicked();
 };
 
 #endif // WIDGET_H

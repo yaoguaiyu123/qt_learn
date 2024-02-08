@@ -7,6 +7,7 @@
 #include <QNetworkInterface>
 #include <QProcess>
 #include <QDebug>
+#include <QFileDialog>
 
 
 Widget::Widget(QWidget *parent,QString username) :
@@ -21,9 +22,13 @@ Widget::Widget(QWidget *parent,QString username) :
     udpSocket = new QUdpSocket(this);
     port = 7979;
     udpSocket->bind(port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
-    connect(ui->sendButton, SIGNAL(clicked(bool)), this, SLOT(sendButtonClicked()));
+    connect(ui->sendButton, SIGNAL(clicked()), this, SLOT(sendBtn_clicked()));
+    connect(ui->sendTBtn, SIGNAL(clicked()), this, SLOT(sendTBtn_clicked()));
     connect(udpSocket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()));
     sendMsg(UsrEnter);  //发送消息:用户进入群聊,这条发送的消息也会被自己接收
+
+    srv = new Server(this);
+    connect(srv, SIGNAL(sendFileName(QString)), this, SLOT(getFileName(QString)));
 }
 
 // 发送消息
@@ -43,16 +48,21 @@ void Widget::sendMsg(MsgType type, QString srvaddr)
         ui->msgBrowser->verticalScrollBar()->setValue(ui->msgBrowser->verticalScrollBar()->maximum());
         break;
     case UsrEnter:
-        //        qDebug() << "发送新用户加入信息:" << getUsername() << "   " << address;
+//        qDebug() << "发送新用户加入信息:" << getUsername() << "   " << address;
         out << address;
         break;
     case UsrLeft:
         break;
-    case FileName:
+    case FileName: {
+        int row = ui->userTableWidget->currentRow();
+        QTableWidgetItem* item01 = ui->userTableWidget->item(row, 1);
+        QString clntaddr = item01->text();
+        qDebug() << clntaddr;
+        out << address << clntaddr << filename;
         break;
+    }
     case Refuse:
-        break;
-    default:
+        out << srvaddr;
         break;
     }
     // P2P模式下所有的主机对应的程序都在同一端口监听和发送
@@ -82,17 +92,31 @@ void Widget::processPendingDatagrams()
             break;
         case UsrEnter:
             in >> usrname >> ipAddr;
-            //            qDebug() << "接收到新用户加入:" << usrname << "   " << ipAddr;
+//            qDebug() << "接收到新用户加入:" << usrname << "   " << ipAddr;
             userEnter(usrname, ipAddr);
             break;
         case UsrLeft:
             in >> usrname;
             userLeft(usrname, time);
             break;
-        case FileName:
+        case FileName:{
+            in >> usrname >> ipAddr;
+            QString clntAddr, fileName;
+            in >> clntAddr >> fileName;
+            hasPendingFile(usrname, ipAddr, clntAddr, fileName);
             break;
-        case Refuse:
+        }
+        case Refuse: {
+            in >> usrname;
+            QString srvAddr;
+            in >> srvAddr;
+            QString ipAddr1 = getIp();
+
+            if (ipAddr1 == srvAddr) {
+                srv->refused();
+            }
             break;
+        }
         }
     }
 }
@@ -106,7 +130,7 @@ void Widget::userEnter(QString username, QString ipaddr)
         QTableWidgetItem* ip = new QTableWidgetItem(ipaddr);
         ui->userTableWidget->insertRow(0); // 插入一行
         ui->userTableWidget->setItem(0, 0, user);
-        ui->userTableWidget->setItem(0, 1, user);
+        ui->userTableWidget->setItem(0, 1, ip);
         ui->msgBrowser->setTextColor(Qt::gray);
         ui->msgBrowser->setCurrentFont(QFont("Times New Roman", 10));
         ui->msgBrowser->append(tr("%1 在线!").arg(username));
@@ -152,10 +176,54 @@ QString Widget::getMessage()
 }
 
 // 点击了发送按钮
-void Widget::sendButtonClicked()
+void Widget::sendBtn_clicked()
 {
     sendMsg(Msg);
 }
+
+//点击了发送文件按钮
+void Widget::sendTBtn_clicked()
+{
+    if(ui->userTableWidget->selectedItems().isEmpty())
+    {
+        QMessageBox::warning(0, tr("选择用户"),tr("请先选择目标用户！"), QMessageBox::Ok);
+        return;
+    }
+    srv->show();
+    srv->initSrv();
+}
+
+
+void Widget::getFileName(QString name)
+{
+    filename = name;
+    sendMsg(FileName);
+}
+
+
+void Widget::hasPendingFile(QString usrname, QString srvaddr,QString clntaddr, QString filename)
+{
+    QString ipAddr = getIp();
+    if(ipAddr == clntaddr)
+    {
+        int btn = QMessageBox::information(this,tr("接受文件"),tr("来自%1(%2)的文件：%3,是否接收？").arg(usrname).arg(srvaddr).arg(filename),QMessageBox::Yes,QMessageBox::No);
+        if (btn == QMessageBox::Yes) {
+            QString name = QFileDialog::getSaveFileName(0,tr("保存文件"),filename);
+            if(!name.isEmpty())
+            {
+                Client *clnt = new Client(this);
+                clnt->setFileName(name);
+                clnt->setHostAddr(QHostAddress(srvaddr));
+                clnt->show();
+            }
+        } else {
+            sendMsg(Refuse, srvaddr);
+        }
+    }
+}
+
+
+
 
 Widget::~Widget()
 {

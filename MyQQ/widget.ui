@@ -249,7 +249,7 @@
     <string>X</string>
    </property>
   </widget>
-  <widget class="QToolButton" name="toolButton_8">
+  <widget class="QToolButton" name="sendTBtn">
    <property name="geometry">
     <rect>
      <x>440</x>
