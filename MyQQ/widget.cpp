@@ -29,6 +29,9 @@ Widget::Widget(QWidget *parent,QString username) :
 
     srv = new Server(this);
     connect(srv, SIGNAL(sendFileName(QString)), this, SLOT(getFileName(QString)));
+
+    //初始化按钮图标
+    ui->sendTBtn->setIcon(QPixmap(":/images/send.png"));
 }
 
 // 发送消息
@@ -200,18 +203,19 @@ void Widget::getFileName(QString name)
     sendMsg(FileName);
 }
 
-
+//处理是否接收文件的函数
 void Widget::hasPendingFile(QString usrname, QString srvaddr,QString clntaddr, QString filename)
 {
     QString ipAddr = getIp();
     if(ipAddr == clntaddr)
     {
-        int btn = QMessageBox::information(this,tr("接受文件"),tr("来自%1(%2)的文件：%3,是否接收？").arg(usrname).arg(srvaddr).arg(filename),QMessageBox::Yes,QMessageBox::No);
+        int btn = QMessageBox::information(this, tr("接受文件"), tr("来自%1(%2)的文件：%3,是否接收？")
+                    .arg(usrname).arg(srvaddr).arg(filename), QMessageBox::Yes, QMessageBox::No);
         if (btn == QMessageBox::Yes) {
-            QString name = QFileDialog::getSaveFileName(0,tr("保存文件"),filename);
+            QString name = QFileDialog::getSaveFileName(0,tr("保存文件"),filename);   //处理文件的保存地址
             if(!name.isEmpty())
             {
-                Client *clnt = new Client(this);
+                Client *clnt = new Client(this);   //创建客户端
                 clnt->setFileName(name);
                 clnt->setHostAddr(QHostAddress(srvaddr));
                 clnt->show();

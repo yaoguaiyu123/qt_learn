@@ -36,18 +36,20 @@ void Server::initSrv()
 }
 
 // 发送文件
+//当客户端连接到服务端的时候就调用此函数
 void Server::sndMsg()
 {
     ui->sSendButton->setEnabled(false);
-    tcpSocket = tServer->nextPendingConnection(); // 从TcpServer获取TcpSocket连接
+    tcpSocket = tServer->nextPendingConnection(); // 从TcpServer获取TcpSocket套接字
+    //数据写入到TCP缓冲区就会发出bytesWriten信号
     connect(tcpSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(updClntProgress(qint64)));
     ui->sStatusLabel->setText(tr("开始传送文件 %1 !").arg(theFilename));
-    localFile = new QFile(filename);
+    localFile = new QFile(filename);   //通过文件地址创建一个文件对象
     if (!localFile->open(QFile::ReadOnly)) {
         QMessageBox::warning(this, "应用程序", tr("无法读取文件 %1\n%2").arg(filename).arg(localFile->errorString()));
         return;
     }
-    totalBytes = localFile->size();
+    totalBytes = localFile->size();   //totalBytes初始化为整个文件的大小
     QDataStream sendOut(&outBlock, QIODevice::WriteOnly); // 创建一个写入到缓冲区的字节流
     time.start(); // 启动计时器
     QString curFile = filename.right(filename.size() - filename.lastIndexOf('/') - 1); // 通过文件路径获得文件名
@@ -55,11 +57,14 @@ void Server::sndMsg()
     totalBytes += outBlock.size(); // 加上文件头的大小
     sendOut.device()->seek(0); // 流指针指向开头
     sendOut << totalBytes << qint64(outBlock.size() - sizeof(qint64) * 2);
+    qDebug() << totalBytes << "   " << outBlock.size() << "   哈哈哈";
     bytesTobeWrite = totalBytes - tcpSocket->write(outBlock);
     outBlock.resize(0); // 清空发送缓冲区
 }
 
 // 更新进度条并且持续传输文件
+// 一开始当写入文件头到TCP缓冲区的的时候就触发此函数
+// 此函数执行写入文件到TCP缓冲区,从而再调用此函数，直到传输完毕
 void Server::updClntProgress(qint64 numBytes)
 {
     qApp->processEvents(); // 使界面不会冻结
@@ -67,13 +72,13 @@ void Server::updClntProgress(qint64 numBytes)
     if (bytesTobeWrite > 0) {
         outBlock = localFile->read(qMin(bytesTobeWrite, payloadSize)); // 将文件数据读入到缓冲区
         bytesTobeWrite -= (int)tcpSocket->write(outBlock);
-        outBlock.reserve(0);
+        outBlock.resize(0);
     } else {
         localFile->close();
     }
     ui->progressBar->setMaximum(totalBytes);
     ui->progressBar->setValue(bytesWriten);
-    float useTime = time.elapsed();
+    float useTime = time.elapsed();   //获取此刻的时间节点
     double speed = bytesWriten / useTime;
     ui->sStatusLabel->setText(tr("已发送 %1MB (%2MB/s) \n共%3MB 已用时:%4s\n 估计剩余时间 %5s")
                                   .arg(bytesWriten / 1024 / 1024)
@@ -109,9 +114,10 @@ void Server::sSendBtn_clicked()
         return;
     }
     ui->sStatusLabel->setText("等待对方接收......");
-    emit sendFileName(theFilename);  //发送信号
+    emit sendFileName(theFilename);  //发送信号,触发Widget::getFileName函数
 }
 
+//关闭按钮点击
 void Server::sCloseBtn_clicked()
 {
     if(tServer->isListening())
@@ -121,6 +127,7 @@ void Server::sCloseBtn_clicked()
             localFile->close();
         tcpSocket->abort();
     }
+
     close();
 }
 
@@ -130,6 +137,7 @@ void Server::refused()
     ui->sStatusLabel->setText(tr("对方拒绝接收！"));
 }
 
+//当窗口即将关闭的时候触发此函数
 void Server::closeEvent(QCloseEvent *)
 {
     sCloseBtn_clicked();

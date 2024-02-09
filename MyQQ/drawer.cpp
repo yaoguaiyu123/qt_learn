@@ -58,8 +58,8 @@ Drawer::Drawer(QWidget* parent, Qt::WindowFlags f)
     toolButton8->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolButton9 = new QToolButton();
     toolButton9->setText(tr("落水无横"));
-    toolButton9->setIcon(QPixmap(":/images/lswh.png"));
-    toolButton9->setIconSize(QPixmap(":/images/head01.png").size());
+    toolButton9->setIcon(QPixmap(":/images/head08.png"));
+    toolButton9->setIconSize(QPixmap(":/images/head08.png").size());
     toolButton9->setAutoRaise(true);
     toolButton9->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     QGroupBox* groupBox = new QGroupBox(); // 创建一个QGroupBox实例，对应抽屉"群成员"

@@ -1,6 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+//文件传输的客户端
 #include <QDialog>
 #include <QHostAddress>
 #include <QFile>
@@ -15,9 +16,9 @@ class Client : public QDialog
 {
     Q_OBJECT
 
-        public:
-                 explicit Client(QWidget *parent = 0);
-    ~Client();
+public:
+    explicit Client(QWidget *parent = 0);
+~Client();
 
     void setHostAddr(QHostAddress addr);
     void setFileName(QString name);
@@ -46,8 +47,8 @@ private slots:
     void newConn();
     void readMsg();
     void displayErr(QAbstractSocket::SocketError);
-    void on_cCancleBtn_clicked();
-    void on_cCloseBtn_clicked();
+    void cCancleBtn_clicked();
+    void cCloseBtn_clicked();
 };
 
 #endif // CLIENT_H
