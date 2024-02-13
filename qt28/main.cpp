@@ -1,6 +1,7 @@
 // Date:2024/2/8
 // Author:妖怪鱼
 // Introduction:Qt数据库项目
+// 这个项目比较复杂，在这里作统一介绍
 #include "mainwindow.h"
 #include "connectdialog.h"
 #include <QApplication>

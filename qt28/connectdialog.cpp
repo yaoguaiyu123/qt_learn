@@ -8,7 +8,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) :
     ui->setupUi(this);
     QStringList drivers = QSqlDatabase::drivers(); // 返回一个支持的数据库驱动程序的列表(如果系统上安装了该驱动的话)
     ui->comboBox->addItems(drivers);
-    connect(ui->comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(driverChanged(const QString&)));
+    connect(ui->comboBox, SIGNAL(currentTextChanged(QString)), this, SLOT(driverChanged(const QString&)));
     ui->status_label->setText("准备连接数据库");
     connect(ui->pushButton_1, SIGNAL(clicked(bool)), this, SLOT(clickedButton1()));
 }
@@ -101,7 +101,7 @@ QSqlError ConnectDialog::addConnection(const QString& driver, const QString& dbN
 void ConnectDialog::addSqliteConnection()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("testDatabase01");  //设置数据库的名称为 "testDatabase01"，即将要创建或打开的数据库文件的名称。
+    db.setDatabaseName("database01");  //设置数据库的名称为 "testDatabase01"，即将要创建或打开的数据库文件的名称。
     if (!db.open()) {
         ui->status_label->setText(db.lastError().text());
         return;

@@ -26,7 +26,7 @@ public:
     void creatDB();
     void addSqliteConnection();
 private slots:
-    void on_cancelButton_clicked() { reject(); }
+    void on_pushButton_2_clicked() { reject(); }
     void driverChanged(const QString&);
     void clickedButton1();
 private:
