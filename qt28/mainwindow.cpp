@@ -15,14 +15,16 @@ MainWindow::MainWindow(const QString &factoryTable,const QString &carTable,QFile
     : QMainWindow(parent)
 {
     // 初始化数据
-    file = carDetails;
+    file = carDetails;  //初始化文件对象
     readCarData();    //将XML文件中的内容读入到QDomDocument类实例carData中
     carModel = new QSqlRelationalTableModel(this);
-    carModel->setTable(carTable);
+    carModel->setTable(carTable);    //设置carModel对应的数据库表为carTable
     //setRelation函数设置表中的某一列与另一个表的关联关系
+//    这里指定了carTable表的第二个字段与factoryTable表的id字段相映射，并且在模型视图中显示为manufactory字段
     carModel->setRelation(2, QSqlRelation(factoryTable, "id", "manufactory"));
-    carModel->select();
+    carModel->select();   //执行查询
     factoryModel = new QSqlTableModel(this);
+    //执行setTable和select两个函数相当于select * from testTable
     factoryModel->setTable(factoryTable);
     factoryModel->select();
 
@@ -170,6 +172,7 @@ void MainWindow::showCarDetails(QModelIndex index)
     }
 }
 
+//从QDomNode中读取数据
 void MainWindow::getAttribList(QDomNode car)
 {
     attribList->clear();
@@ -237,8 +240,8 @@ void MainWindow::removeCarFromDatabase(QModelIndex index)
 void MainWindow::decreaseCarCount(QModelIndex index)
 {
     int row = index.row();
-    int count = carModel->rowCount();			//(a)
-    if (count == 0)                               //(b)
+    int count = carModel->rowCount();
+    if (count == 0)
         factoryModel->removeRow(row);
 }
 

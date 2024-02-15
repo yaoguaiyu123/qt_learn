@@ -1,6 +1,6 @@
 #ifndef CONNECTDIALOG_H
 #define CONNECTDIALOG_H
-
+//该类用于连接数据库
 #include <QDialog>
 #include <QMessageBox>
 #include <QSqlDatabase>
