@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/head.png</file>
+        <file>images/向下箭头.png</file>
+        <file>images/向右箭头.png</file>
+    </qresource>
+</RCC>
