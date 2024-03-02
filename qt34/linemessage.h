@@ -12,6 +12,7 @@ typedef enum {
 typedef struct LineMessageData {
     QString message;
     QString headImg;
+    int lineCount;
 }LineMessageData;
 
 class LineMessage : public QWidget
