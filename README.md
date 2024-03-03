@@ -51,5 +51,12 @@
  **qt26:** 多线程客户端<br/>
  **qt27:** Qt连接数据库SqlLite<br/>
  **qt28:** Qt数据库项目<br/>
+  **MyQQ:** 仿QQ群聊天的实现<br/>
  **qt29:** Qt操作sqlite数据库(再次学习)<br/>
- **MyQQ:** 仿QQ群聊天的实现<br/>
+ **qt30:** Qt翻转动画<br/>
+ **qt31:** 自定义控件QIPLineEdit<br/>
+ **qt32:** 托盘操作<br/>
+ **qt33:** QQ好友组模拟实现<br/>
+ **qt34:** QQ聊天窗口模拟实现<br/>
+ ##### 以下开始提交qmake或者cmake文件 
+ **qt35:** 头像裁剪<br/>
