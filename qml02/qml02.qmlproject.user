@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 11.0.3, 2024-03-04T15:57:19. -->
+<!-- Written by QtCreator 11.0.3, 2024-03-12T13:11:54. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -88,8 +88,8 @@
   <variable>ProjectExplorer.Project.Target.0</variable>
   <valuemap type="QVariantMap">
    <value type="QString" key="DeviceType">Desktop</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">C/C++ 2024-03-04</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C/C++ 2024-03-04</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">C/C++ 2024-03-12</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C/C++ 2024-03-12</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{aafd1ddf-e117-4297-9b12-cab72b64c5bd}</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveBuildConfiguration">-1</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
