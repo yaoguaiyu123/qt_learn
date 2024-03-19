@@ -19,6 +19,14 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+//Qt6音频播放步骤
+//1.创建一个一个QAudioDevice对象
+//2.创建一个QAudioFormat对象,通过调用QAudioDevice对象的defaultAudioOutput方法给其初始化
+//3.创建一个QFile对象,打开音频文件
+//4.创建一个MyDevice对象,其中MyDevice是一个自定义的类，继承自QIoDevice类,需要实现readData和writeData两个函数
+// 构造函数中会将QFile文件中的数据都初始化到其m_data中
+//5.创建一个QAudioSink对象(堆对象)，构造函数中传入audioDevice:QAudioDevice 和 format:QAudioFormat两个参数
+//6.调用sink:QAudioSink的start函数,传入MyDevice对象作为参数
 
 // 播放音频按钮点击
 void MainWindow::on_pushButton_clicked()
@@ -29,8 +37,13 @@ void MainWindow::on_pushButton_clicked()
         return;
     }
     QAudioFormat format = audioDevice.preferredFormat();
+//    sampleRate 表示采样率，即每秒钟采集的样本数。
+//    channelCount 表示声道数，即音频通道的数量。
+//    sampleFormat 表示采样格式，可能是整数值，用于表示不同的采样位深度和编码方式。
+
     qDebug("sampleRate: %d, channelCount: %d, sampleFormat: %d",
         format.sampleRate(), format.channelCount(), format.sampleFormat());
+    format.setSampleRate(22050);
 
     QFile file("../36/yinpin.wav");
     if (!file.open(QIODevice::ReadOnly)) {

@@ -12,6 +12,7 @@ MyDevice::MyDevice(QByteArray dataPcm)
 
 // 读取数据
 // 扬声器缺少数据的时候会自动调用这个方法
+// 这个方法用于给扬声器提供声音数据
 qint64 MyDevice::readData(char* data, qint64 maxlen)
 {
     if (m_writeLen >= m_dataPcm.size()) {
@@ -22,7 +23,7 @@ qint64 MyDevice::readData(char* data, qint64 maxlen)
     // 把要播放的pcm数据存入声卡缓冲区里
     memcpy(data, m_dataPcm.data() + m_writeLen, len);
     m_writeLen += len;
-    qDebug() << "播放:" << m_writeLen;
+//    qDebug() << "播放:" << m_writeLen;
     return len;
 
 }
