@@ -1,0 +1,70 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-e01ee0d76daec6054b5a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "qt37",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "qt37::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-qt37-Debug-e885380b63b688bda5d9.json",
+					"name" : "qt37",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "qt37_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-qt37_autogen-Debug-528c2ca746867e33a0c8.json",
+					"name" : "qt37_autogen",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/run/media/root/study/github_repository/qt_learn/build-qt37-C_C_2024_03_19-Debug",
+		"source" : "/run/media/root/study/github_repository/qt_learn/qt37"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}
