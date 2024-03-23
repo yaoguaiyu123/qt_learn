@@ -21,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout* layout = new QVBoxLayout(ui->centralwidget);
     layout->addWidget(ui->pushButton);
     layout->addWidget(videoWidget);
-
     m_player->setVideoOutput(videoWidget);
     m_player->setSource(QUrl("../qt37/123.mp4"));
 

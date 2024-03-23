@@ -1,0 +1,8 @@
+/run/media/root/study/github_repository/qt_learn/build-qt39-C_C_2024_03_23-Debug/CMakeFiles/qt39.dir
+/run/media/root/study/github_repository/qt_learn/build-qt39-C_C_2024_03_23-Debug/CMakeFiles/edit_cache.dir
+/run/media/root/study/github_repository/qt_learn/build-qt39-C_C_2024_03_23-Debug/CMakeFiles/rebuild_cache.dir
+/run/media/root/study/github_repository/qt_learn/build-qt39-C_C_2024_03_23-Debug/CMakeFiles/list_install_components.dir
+/run/media/root/study/github_repository/qt_learn/build-qt39-C_C_2024_03_23-Debug/CMakeFiles/install.dir
+/run/media/root/study/github_repository/qt_learn/build-qt39-C_C_2024_03_23-Debug/CMakeFiles/install/local.dir
+/run/media/root/study/github_repository/qt_learn/build-qt39-C_C_2024_03_23-Debug/CMakeFiles/install/strip.dir
+/run/media/root/study/github_repository/qt_learn/build-qt39-C_C_2024_03_23-Debug/CMakeFiles/qt39_autogen.dir

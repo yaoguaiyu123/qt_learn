@@ -59,11 +59,12 @@
  **qt32:** 托盘操作<br/>
  **qt33:** QQ好友组模拟实现<br/>
  **qt34:** QQ聊天窗口模拟实现<br/>
-
  ##### 以下开始提交qmake或者cmake文件 
  **qt35:** 头像裁剪<br/>
-
-**qt36**:qt6播放音频<br/>
+ **qt36**:qt6播放音频(QAudioSource)<br/>
+ **qt37**:qt6视频播放(QMediaPlayer)<br/>
+ **qt38**:qt6音频播放(QMediaPlayer)<br/>
+ **qt39**:qt6音频播放,加深理解<br/>
 
 
 
