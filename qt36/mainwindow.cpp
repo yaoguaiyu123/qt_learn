@@ -43,9 +43,9 @@ void MainWindow::on_pushButton_clicked()
 
     qDebug("sampleRate: %d, channelCount: %d, sampleFormat: %d",
         format.sampleRate(), format.channelCount(), format.sampleFormat());
-    format.setSampleRate(22050);
+    format.setSampleRate(8000);
 
-    QFile file("../36/yinpin.wav");
+    QFile file("../qt42/yinpin.pcm");
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << "文件打开失败";
         return;
