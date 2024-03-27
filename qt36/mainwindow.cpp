@@ -51,6 +51,7 @@ void MainWindow::on_pushButton_clicked()
         return;
     }
     m_mydevice = new MyDevice(file.readAll());
+    qDebug() << "m_mydevice->bufferSize():" << m_mydevice->bufferSize();
 
     //必须要指针类型的sink才能播放
     QAudioSink *sink = new QAudioSink(audioDevice, format);

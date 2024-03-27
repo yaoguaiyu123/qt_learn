@@ -9,6 +9,7 @@ class MyDevice : public QIODevice
 public:
     MyDevice(QByteArray dataPcm);
     ~MyDevice();
+    int bufferSize();
 
 protected:
     virtual qint64 readData(char* data, qint64 maxlen);

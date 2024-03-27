@@ -35,6 +35,11 @@ qint64 MyDevice::writeData(const char* data, qint64 len){
     return 0; // MyDevice 不支持写入
 }
 
+int MyDevice::bufferSize()
+{
+    return m_dataPcm.size();
+}
+
 
 MyDevice::~MyDevice(){
     this->close();

@@ -21,6 +21,76 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
+struct qt_meta_stringdata_MyDevice_t {
+    QByteArrayData data[1];
+    char stringdata0[9];
+};
+#define QT_MOC_LITERAL(idx, ofs, len) \
+    Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
+    qptrdiff(offsetof(qt_meta_stringdata_MyDevice_t, stringdata0) + ofs \
+        - idx * sizeof(QByteArrayData)) \
+    )
+static const qt_meta_stringdata_MyDevice_t qt_meta_stringdata_MyDevice = {
+    {
+QT_MOC_LITERAL(0, 0, 8) // "MyDevice"
+
+    },
+    "MyDevice"
+};
+#undef QT_MOC_LITERAL
+
+static const uint qt_meta_data_MyDevice[] = {
+
+ // content:
+       8,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       0,    0, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+       0,    0, // constructors
+       0,       // flags
+       0,       // signalCount
+
+       0        // eod
+};
+
+void MyDevice::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+{
+    Q_UNUSED(_o);
+    Q_UNUSED(_id);
+    Q_UNUSED(_c);
+    Q_UNUSED(_a);
+}
+
+QT_INIT_METAOBJECT const QMetaObject MyDevice::staticMetaObject = { {
+    QMetaObject::SuperData::link<QIODevice::staticMetaObject>(),
+    qt_meta_stringdata_MyDevice.data,
+    qt_meta_data_MyDevice,
+    qt_static_metacall,
+    nullptr,
+    nullptr
+} };
+
+
+const QMetaObject *MyDevice::metaObject() const
+{
+    return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
+}
+
+void *MyDevice::qt_metacast(const char *_clname)
+{
+    if (!_clname) return nullptr;
+    if (!strcmp(_clname, qt_meta_stringdata_MyDevice.stringdata0))
+        return static_cast<void*>(this);
+    return QIODevice::qt_metacast(_clname);
+}
+
+int MyDevice::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QIODevice::qt_metacall(_c, _id, _a);
+    return _id;
+}
 struct qt_meta_stringdata_Widget_t {
     QByteArrayData data[7];
     char stringdata0[77];

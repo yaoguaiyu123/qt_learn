@@ -4,11 +4,48 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 
+MyDevice::MyDevice(QObject* parent)
+    : QIODevice(parent)
+{
+    m_writeLen = 0;
+    m_dataPcm.resize(1024 * 1024 * 4); // 4mb的最大容量
+}
+
+qint64 MyDevice::writeData(const char* data, qint64 len)
+{
+    if (m_writeLen >= m_dataPcm.size()) {
+        return 0;
+    }
+    int writelen = (m_writeLen + len) > m_dataPcm.size() ? (m_dataPcm.size() - m_writeLen) : len;
+    memcpy(m_dataPcm.data() + m_writeLen, data, writelen);
+    m_writeLen += writelen;
+    return writelen;
+}
+
+qint64 MyDevice::readData(char* data, qint64 maxlen)
+{
+    Q_UNUSED(data)
+    Q_UNUSED(maxlen)
+    return 0;
+}
+
+MyDevice::~MyDevice()
+{
+    // 在析构函数中将内存中的数据持久化保存
+    m_dataPcm.resize(m_writeLen);    //重新变化缓存大小,避免冗余
+    QFile file("../qt42/yinpin.pcm");
+    file.open(QIODevice::WriteOnly | QIODevice ::Truncate);
+    file.write(m_dataPcm);
+    file.close();
+}
+
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
-    destinationFile.setFileName("../qt42/yinpin.pcm");
-    destinationFile.open(QIODevice::WriteOnly | QIODevice ::Truncate);
+    //    destinationFile.setFileName("../qt42/yinpin.pcm");
+    //    destinationFile.open(QIODevice::WriteOnly | QIODevice ::Truncate);
+    m_mydevice = new MyDevice(this);
+
     QPushButton* button1 = new QPushButton(this);
     QPushButton* button2 = new QPushButton(this);
     QAudioFormat format;
@@ -48,7 +85,8 @@ Widget::Widget(QWidget *parent)
     resize(400,200);
 }
 void Widget::startRecording(){
-    audio->start(&destinationFile);
+    m_mydevice->open(QIODevice::WriteOnly);
+    audio->start(m_mydevice);
 }
 
 
@@ -60,7 +98,7 @@ void Widget::shandleStateChanged(QAudio::State state)
 void Widget::stopRecording()
 {
     audio->stop();
-    destinationFile.close();
+    m_mydevice->close();
 }
 
 
