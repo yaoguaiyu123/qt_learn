@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-57152f50f230bef8b6c3.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "qt48",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "qt48::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-qt48-Debug-3dead196e91823db50cc.json",
+					"name" : "qt48",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "qt48_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-qt48_autogen-Debug-2027a3a6c0e725cfd419.json",
+					"name" : "qt48_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "qt48_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-qt48_autogen_timestamp_deps-Debug-299ac6dc58aaf5cde02d.json",
+					"name" : "qt48_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/run/media/root/study/github_repository/qt_learn/build-qt48-Desktop_Qt_6_5_3_GCC_64bit-Debug",
+		"source" : "/run/media/root/study/github_repository/qt_learn/qt48"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

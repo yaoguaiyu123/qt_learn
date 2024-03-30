@@ -1,0 +1,27 @@
+# ninja log v5
+2334	2578	1711807248534914881	qt48	c8820e2fb864e861
+296	2442	1711806346967877147	CMakeFiles/qt48.dir/main.cpp.o	b8337b75da4173f6
+3	27	1711807245984925406	/run/media/root/study/github_repository/qt_learn/build-qt48-Desktop_Qt_6_5_3_GCC_64bit-Debug/qt48_autogen/mocs_compilation.cpp	d459be6c92e291c2
+29	2334	1711807248291582550	CMakeFiles/qt48.dir/mainwindow.cpp.o	97d5b2efb8c3a9c0
+3	27	1711807245984925406	/run/media/root/study/github_repository/qt_learn/build-qt48-Desktop_Qt_6_5_3_GCC_64bit-Debug/qt48_autogen/timestamp	d459be6c92e291c2
+296	2435	1711806346961210465	CMakeFiles/qt48.dir/qt48_autogen/mocs_compilation.cpp.o	63429f9b7e7f89f
+3	27	1711807245984925406	qt48_autogen/mocs_compilation.cpp	d459be6c92e291c2
+3	27	1711807245984925406	qt48_autogen/timestamp	d459be6c92e291c2
+3	25	1711807268168168932	qt48_autogen/timestamp	d459be6c92e291c2
+3	25	1711807268168168932	qt48_autogen/mocs_compilation.cpp	d459be6c92e291c2
+3	25	1711807268168168932	/run/media/root/study/github_repository/qt_learn/build-qt48-Desktop_Qt_6_5_3_GCC_64bit-Debug/qt48_autogen/timestamp	d459be6c92e291c2
+3	25	1711807268168168932	/run/media/root/study/github_repository/qt_learn/build-qt48-Desktop_Qt_6_5_3_GCC_64bit-Debug/qt48_autogen/mocs_compilation.cpp	d459be6c92e291c2
+27	2290	1711807270431493323	CMakeFiles/qt48.dir/mainwindow.cpp.o	97d5b2efb8c3a9c0
+2290	2523	1711807270661492416	qt48	c8820e2fb864e861
+3	28	1711807277868130887	qt48_autogen/timestamp	d459be6c92e291c2
+3	28	1711807277868130887	qt48_autogen/mocs_compilation.cpp	d459be6c92e291c2
+3	28	1711807277868130887	/run/media/root/study/github_repository/qt_learn/build-qt48-Desktop_Qt_6_5_3_GCC_64bit-Debug/qt48_autogen/timestamp	d459be6c92e291c2
+3	28	1711807277868130887	/run/media/root/study/github_repository/qt_learn/build-qt48-Desktop_Qt_6_5_3_GCC_64bit-Debug/qt48_autogen/mocs_compilation.cpp	d459be6c92e291c2
+30	2324	1711807280164788652	CMakeFiles/qt48.dir/mainwindow.cpp.o	97d5b2efb8c3a9c0
+2324	2562	1711807280398121084	qt48	c8820e2fb864e861
+3	28	1711807313054665533	qt48_autogen/timestamp	d459be6c92e291c2
+3	28	1711807313054665533	qt48_autogen/mocs_compilation.cpp	d459be6c92e291c2
+3	28	1711807313054665533	/run/media/root/study/github_repository/qt_learn/build-qt48-Desktop_Qt_6_5_3_GCC_64bit-Debug/qt48_autogen/timestamp	d459be6c92e291c2
+3	28	1711807313054665533	/run/media/root/study/github_repository/qt_learn/build-qt48-Desktop_Qt_6_5_3_GCC_64bit-Debug/qt48_autogen/mocs_compilation.cpp	d459be6c92e291c2
+29	2329	1711807315354657221	CMakeFiles/qt48.dir/mainwindow.cpp.o	97d5b2efb8c3a9c0
+2329	2563	1711807315587989713	qt48	c8820e2fb864e861
