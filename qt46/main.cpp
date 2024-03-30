@@ -1,8 +1,8 @@
-// Date:2024/3/27
+// Date:2024/3/28
 // Author:妖怪鱼
-// Introduction:qt5的QAudiuInput类的使用，实现麦克风输入声音
+// Introduction:qt多线程学习
 #include "widget.h"
-
+#include <QThread>
 #include <QApplication>
 
 int main(int argc, char *argv[])
