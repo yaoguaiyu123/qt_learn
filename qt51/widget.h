@@ -14,8 +14,10 @@ public:
 
 private:
     LineEdit* lineEdit;
+    int m_count = 0;
 
 protected:
     virtual bool eventFilter(QObject* watched, QEvent* event) override;
+    virtual bool event(QEvent* event) override;
 };
 #endif // WIDGET_H

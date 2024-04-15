@@ -14,6 +14,15 @@ Widget::Widget(QWidget *parent)
     mainLayout->addWidget(lineEdit);
 }
 
+bool Widget::event(QEvent* event)
+{
+    if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease
+        || event->type() == QEvent::MouseMove) {
+        qDebug() << "Widget::event(): " << m_count++;
+    }
+    return QWidget::event(event);
+}
+
 bool Widget::eventFilter(QObject* watched, QEvent* event)
 {
     if (watched == this) {

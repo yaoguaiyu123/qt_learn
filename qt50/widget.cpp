@@ -24,7 +24,7 @@ Widget::~Widget()
 // 对鼠标和键盘事件event()函数有着特殊的处理机制
 bool Widget::event(QEvent* event)
 {
-    qDebug() << "event()函数收到事件: " << m_ans++;
+//    qDebug() << "event()函数收到事件: " << m_ans++;
     return QWidget::event(event); // 调用父类的event函数,这里的QWidget指定的是父类的作用域
 }
 
@@ -45,7 +45,7 @@ bool Widget::eventFilter(QObject* watched, QEvent* event)
     } else if (watched == lineEdit) {
         if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease) {
             qDebug() << "eventFilter输入截停: " << m_ans_key++;
-            return true;
+            return false;
         }
     }
     return false;
