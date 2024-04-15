@@ -1,0 +1,70 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-6547e5a36126d2918850.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "qt50",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "qt50::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-qt50-Debug-6178077f4aaa20f6dd32.json",
+					"name" : "qt50",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "qt50_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-qt50_autogen-Debug-b6105acd8815e7c134f4.json",
+					"name" : "qt50_autogen",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/run/media/root/study/github_repository/qt_learn/build-qt50-C_C_2024_04_15-Debug",
+		"source" : "/run/media/root/study/github_repository/qt_learn/qt50"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}
