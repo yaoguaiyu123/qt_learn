@@ -1,6 +1,6 @@
 // Date:2024/3/25
 // Author:妖怪鱼
-// Introduction:获取网络请的程序
+// Introduction:获取网络的程序
 #include "widget.h"
 
 #include <QApplication>
