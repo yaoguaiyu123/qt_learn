@@ -52,7 +52,6 @@ void ClientHandler::run()
             continue;
         }
         if (byteArray[0] == 'U' && !is_begin) {
-            qDebug() << "----begin----";
             //读出开头和大小
             is_begin = true;
             byteArray.remove(0, 1); // 去除开头
@@ -64,14 +63,13 @@ void ClientHandler::run()
             file.write(byteArray);
         }
     }
-    if(recvSize < totalSize){
+    if(recvSize < totalSize + 1 + sizeof(qint64)){
         QFile::remove(filepath);
         qDebug() << "文件接收不完整，已删除";
     } else {
         qDebug() << "文件接收成功";
     }
     file.close();
-    qDebug() << "----end----";
 }
 
 

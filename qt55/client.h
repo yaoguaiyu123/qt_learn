@@ -16,8 +16,9 @@ public:
     void handleBytesWritten(qint64 size);
     // void downloadFile(const QString &fileName, const QString &savePath);
     ~Client();
-private slots:
+public slots:
     // void onReadyRead();
+    qint64 writeByteArray(const QByteArray& byteArray);
 signals:
 private:
     QTcpSocket socket;
