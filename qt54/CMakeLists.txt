@@ -7,11 +7,9 @@ find_package(Qt6 REQUIRED COMPONENTS Network)
 qt_standard_project_setup()
 
 qt_add_executable(qt54
-    mainwindow.h mainwindow.cpp
-    mainwindow.ui
     main.cpp
-    server.h server.cpp
-    clienthandler.h clienthandler.cpp
+    fileserver.h fileserver.cpp
+    fileclienthandler.h fileclienthandler.cpp
 )
 
 target_compile_features(qt54 PRIVATE cxx_std_20)

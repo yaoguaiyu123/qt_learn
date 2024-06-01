@@ -1,23 +1,23 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+// 文件传输的套接字
+
 #include <QTcpSocket>
 #include <QObject>
 #include <QFile>
 
-class Client : public QObject
+class FileClient : public QObject
 {
     Q_OBJECT
 
 public:
-    Client(QObject *parent = nullptr);
+    FileClient(QObject *parent = nullptr);
     bool connectToServer(const QString &host, quint16 port);
     void uploadFile(const QString& filePath);
     void handleBytesWritten(qint64 size);
-    // void downloadFile(const QString &fileName, const QString &savePath);
-    ~Client();
+    ~FileClient();
 public slots:
-    // void onReadyRead();
     qint64 writeByteArray(const QByteArray& byteArray);
 signals:
 private:

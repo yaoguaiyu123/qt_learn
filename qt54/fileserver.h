@@ -3,15 +3,16 @@
 
 #include <QTcpServer>
 #include <QThreadPool>
+// 文件服务器
 
-class Server : public QTcpServer
+class FileServer : public QTcpServer
 {
     Q_OBJECT
 
 public:
-    Server(QObject *parent = nullptr);
-    ~Server();
-    bool startServer(const QHostAddress &address, quint16 port);
+    FileServer(QObject *parent = nullptr);
+    ~FileServer();
+    bool startFileServer(const QHostAddress &address, quint16 port);
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;

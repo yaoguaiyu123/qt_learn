@@ -11,7 +11,8 @@ qt_add_executable(qt55
     mainwindow.h mainwindow.cpp
     mainwindow.ui
     main.cpp
-    client.h client.cpp
+    fileclient.h fileclient.cpp
+    fileblock.h
 )
 
 target_compile_features(qt55 PRIVATE cxx_std_20)

@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "client.h"
+#include "fileclient.h"
 #include <QList>
 
 QT_BEGIN_NAMESPACE
