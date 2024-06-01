@@ -4,6 +4,7 @@
 #include <QRunnable>
 #include <QTcpSocket>
 #include <QDir>
+#include <QElapsedTimer>
 struct FileInfo {
     QFile* file;
     qint32 haveWrite;
@@ -26,7 +27,7 @@ private:
     QByteArray m_recvbuf;
     QMap<QString, FileInfo*> m_filemap;  //存储文件路径的map
     QDir * m_dir;
-
+    QElapsedTimer timer;
 };
 
 #endif // CLIENTHANDLER_H

@@ -65,37 +65,50 @@ void FileClient::handleBytesWritten(qint64 size)
 // 封装一个包进行发送,依次写入包的开头,包的大小，文件名，文件数据
 void FileClient::uploadFile(const QString& filePath)
 {
-    // 异步执行
     QtConcurrent::run([this, filePath]() {
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly)) {
-            qDebug() << "file open fail";
+            qDebug() << "Failed to open file: " << filePath;
+            return;
         }
         char beginC = '#';
         qint32 offset = 0;
         qint32 totalSize = file.size();
-        QString filename = QFileInfo(filePath).fileName(); // 得到文件名
+        QString filename = QFileInfo(filePath).fileName();
         QString newFileName = generateRandomAlphanumeric(7) + "_" + filename;
         QByteArray namebyte = newFileName.toLatin1();
+        int times = 0;
         while (offset < totalSize) {
-            // qDebug() << offset;
+            ++times;
+            if (times == 20) {
+                times = 0;
+                QThread::msleep(40);
+            }
             file.seek(offset);
             QByteArray buffer;
             QDataStream stream(&buffer, QIODevice::WriteOnly);
+            stream.setVersion(QDataStream::Qt_5_12);
+
             QByteArray dataBlock = file.read(maxBlockSize);
-            qint32 size = dataBlock.size();
+            qint32 size = sizeof(char) + sizeof(qint32) * 4 + namebyte.size() + dataBlock.size();
+
             stream << beginC;
-            stream << size;
+            stream << size;   //当前包的长度
             stream << totalSize;
             stream << namebyte;
             stream << dataBlock;
+
             QMetaObject::invokeMethod(this, "writeByteArray", Qt::QueuedConnection,
-                Q_ARG(QByteArray, buffer)); // 写出
+                Q_ARG(QByteArray, buffer));
+
             offset += dataBlock.size();
-            qDebug() << offset << " " << buffer.size();
+            // qDebug() << "Offset: " << offset << " 当前包大小: " << size;
         }
+
+        file.close();
     });
 }
+
 
 
 qint64 FileClient::writeByteArray(const QByteArray& byteArray)
