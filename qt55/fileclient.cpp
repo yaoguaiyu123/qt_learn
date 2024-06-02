@@ -82,12 +82,12 @@ void FileClient::uploadFile(const QString& filePath)
             ++times;
             if (times == 20) {
                 times = 0;
-                QThread::msleep(40);
+                QThread::msleep(5);
             }
             file.seek(offset);
             QByteArray buffer;
             QDataStream stream(&buffer, QIODevice::WriteOnly);
-            stream.setVersion(QDataStream::Qt_5_12);
+            stream.setVersion(QDataStream::Qt_6_5);
 
             QByteArray dataBlock = file.read(maxBlockSize);
             qint32 size = sizeof(char) + sizeof(qint32) * 4 + namebyte.size() + dataBlock.size();
@@ -102,7 +102,7 @@ void FileClient::uploadFile(const QString& filePath)
                 Q_ARG(QByteArray, buffer));
 
             offset += dataBlock.size();
-            // qDebug() << "Offset: " << offset << " 当前包大小: " << size;
+            qDebug() << "Offset: " << offset << " 当前包大小: " << size;
         }
 
         file.close();

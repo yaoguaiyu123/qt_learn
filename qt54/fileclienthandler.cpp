@@ -6,11 +6,16 @@
 #include <QDir>
 #include <QTime>
 #include <QElapsedTimer>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QMutexLocker>
+#include "parsefiledata.h"
 
-FileClientHandler::FileClientHandler(QTcpSocket * socket)
-    : m_socket(socket),
+FileClientHandler::FileClientHandler(qintptr socketDescriptor)
+    : m_socket(new QTcpSocket),
     m_dir(new QDir("/root/test"))
 {
+    m_socket->setSocketDescriptor(socketDescriptor);
+    _mutex = new QMutex();
     connect(m_socket, &QTcpSocket::readyRead, this, &FileClientHandler::onReadyRead);
     timer.start();
 }
@@ -18,11 +23,13 @@ FileClientHandler::FileClientHandler(QTcpSocket * socket)
 // 读取数据
 void FileClientHandler::onReadyRead()
 {
+    QMutexLocker locker(_mutex);
     m_recvbuf.append(m_socket->readAll());
-    // qDebug() << "ddd";
-    parseFileData(); // 处理数据
-    // QMetaObject::invokeMethod(this, "parseFileData", Qt::QueuedConnection);
+    // QtConcurrent::run([this]() {
+    //     parseFileData();
+    // });
 }
+
 
 // 处理文件包数据
 void FileClientHandler::parseFileData()
@@ -55,33 +62,34 @@ void FileClientHandler::parseFileData()
             if (!m_dir->exists("serverFile")) {
                 m_dir->mkdir("serverFile");
             }
-            QFile *qfile = new QFile(m_dir->path() + "/serverFile/" + filename);
+            QFile* qfile = new QFile(m_dir->path() + "/serverFile/" + filename);
             if (!qfile->open(QIODevice::WriteOnly)) {
                 qDebug() << "Failed to create file: " << filename;
                 return;
             }
-            FileInfo *fileinfo = new FileInfo;
+            FileInfo* fileinfo = new FileInfo;
             fileinfo->file = qfile;
             fileinfo->haveWrite = 0;
             m_filemap.insert(filename, fileinfo);
         }
 
-        FileInfo *fileinfo = m_filemap.value(filename);
+        FileInfo* fileinfo = m_filemap.value(filename);
         fileinfo->file->write(fileData);
         fileinfo->haveWrite += fileData.size();
         if (timer.elapsed() >= 500) {
             timer.restart();
-            qDebug() << "已经写入: " << fileinfo->haveWrite <<
-                " 还剩: " << -fileinfo->haveWrite + totalSize;
+            qDebug() << "已经写入: " << fileinfo->haveWrite << " 还剩: " << -fileinfo->haveWrite + totalSize;
         }
-        m_recvbuf.remove(0, sizeof(char) + sizeof(qint32) + sizeof(qint32) +
-                bytefilename.size() + fileData.size() + 2 * sizeof(qint32));
+        QMutexLocker locker(_mutex);
+        m_recvbuf.remove(0, sizeof(char) + sizeof(qint32) + sizeof(qint32) + bytefilename.size() + fileData.size() + 2 * sizeof(qint32));
 
         if (fileinfo->haveWrite == totalSize) {
             qDebug() << tr("%1 文件上传成功").arg(filename);
             delete fileinfo->file;
+            fileinfo->file = nullptr;
             m_filemap.remove(filename);
             delete fileinfo;
+            fileinfo = nullptr;
         }
     }
 }

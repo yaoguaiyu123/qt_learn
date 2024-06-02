@@ -10,6 +10,7 @@ qt_add_executable(qt54
     main.cpp
     fileserver.h fileserver.cpp
     fileclienthandler.h fileclienthandler.cpp
+    parsefiledata.h parsefiledata.cpp
 )
 
 target_compile_features(qt54 PRIVATE cxx_std_20)
