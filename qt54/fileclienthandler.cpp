@@ -6,59 +6,93 @@
 #include <QDir>
 #include <QTime>
 #include <QElapsedTimer>
-#include <QtConcurrent/QtConcurrentRun>
-#include <QMutexLocker>
-#include "parsefiledata.h"
+#include <QtEndian>
 
-FileClientHandler::FileClientHandler(qintptr socketDescriptor)
-    : m_socket(new QTcpSocket),
+#ifndef MIN_PACKAGE_LENGTH
+#define MIN_PACKAGE_LENGTH 15
+#endif
+
+FileClientHandler::FileClientHandler(QTcpSocket * socket)
+    : m_socket(socket),
     m_dir(new QDir("/root/test"))
 {
-    m_socket->setSocketDescriptor(socketDescriptor);
-    _mutex = new QMutex();
     connect(m_socket, &QTcpSocket::readyRead, this, &FileClientHandler::onReadyRead);
+    m_single_recvbuf = new uchar[16 * 1024];  // 单个包的接收缓存数组
     timer.start();
 }
 
 // 读取数据
 void FileClientHandler::onReadyRead()
 {
-    QMutexLocker locker(_mutex);
-    m_recvbuf.append(m_socket->readAll());
-    // QtConcurrent::run([this]() {
-    //     parseFileData();
-    // });
+    QByteArray data = m_socket->readAll();
+    if (data.isEmpty()) {
+        return;
+    }
+    m_recvbuf.append(reinterpret_cast<uchar*>(data.data()),data.size());
+    parseFileData(); // 处理数据
+}
+
+// 拷贝数据到单包缓冲区
+void FileClientHandler::copyDataFromRecvBuf(uchar* dest, qint32 numBytes) {
+    if (numBytes > m_recvbuf.capacity) {
+        qDebug() << "请求数据超过容量";
+        return;
+    }
+    qint32 firstPartLength = qMin(numBytes, m_recvbuf.capacity - m_recvbuf.beginIndex);
+    memcpy(dest, m_recvbuf.buffer + m_recvbuf.beginIndex, firstPartLength);
+
+    if (numBytes > firstPartLength) {
+        memcpy(dest + firstPartLength, m_recvbuf.buffer, numBytes - firstPartLength);
+    }
+    // m_recvbuf.beginIndex = (m_recvbuf.beginIndex + numBytes) % m_recvbuf.capacity;
 }
 
 
 // 处理文件包数据
 void FileClientHandler::parseFileData()
 {
-    while (!m_recvbuf.isEmpty()) {
-        QDataStream stream(&m_recvbuf, QIODevice::ReadOnly);
-        stream.setVersion(QDataStream::Qt_5_12);
-        // qDebug() << m_recvbuf.size();
-        if (m_recvbuf.size() < sizeof(char) + sizeof(qint32) * 2) {
+    while (m_recvbuf.getAvailableSpace() > 0) {
+        /// new逻辑
+        if (m_recvbuf.capacity - m_recvbuf.getAvailableSpace() < MIN_PACKAGE_LENGTH) {
             return;
         }
-        char beginC;
-        qint32 size = -1; // 当前包的长度
-        qint32 totalSize = -1;
-        stream >> beginC >> size >> totalSize;
+        // 取出 1 + sizeof(qint32) 个字节放到 m_single_recvbuf
+        copyDataFromRecvBuf(m_single_recvbuf, 1 + sizeof(qint32));
 
-        if (beginC != '#' || size == -1) {
-            return;
-        } else if (m_recvbuf.size() < size) {
+        qint32 bytesRead = 0;
+        if (m_single_recvbuf[0] != '#') {
+            qDebug() << "数据包开头错误 " << m_single_recvbuf[0];
             return;
         }
-        QByteArray bytefilename;
-        QByteArray fileData;
-        stream >> bytefilename;
-        stream >> fileData;
+        ++bytesRead;
+        quint32 packageSize = qFromBigEndian<qint32>(reinterpret_cast<const uchar*>(
+            m_single_recvbuf + bytesRead)); // 包大小
+        bytesRead += sizeof(qint32);
+        if (m_recvbuf.capacity - m_recvbuf.getAvailableSpace() < packageSize) {
+            return;
+        }
+        // 取出 size - (1 + sizeof(qint32)) 个字节添加到 m_single_recvbuf
+        copyDataFromRecvBuf(m_single_recvbuf + 1 + sizeof(qint32), packageSize - (1 + sizeof(qint32)));
 
-        QString filename = QString::fromLatin1(bytefilename);
+        quint32 totalSize = qFromBigEndian<qint32>(reinterpret_cast<const uchar*>(
+            m_single_recvbuf + bytesRead)); // 文件总大小
+        bytesRead += sizeof(qint32);
+        quint32 fileNameLength = qFromBigEndian<qint32>(reinterpret_cast<const uchar*>(
+            m_single_recvbuf + bytesRead)); // 文件名长度
+        bytesRead += sizeof(qint32);
+        QByteArray fileNameByte(reinterpret_cast<const char*>(m_single_recvbuf + bytesRead),
+            fileNameLength);  // 文件名
+        bytesRead += fileNameLength;
+        quint32 dataLength = qFromBigEndian<qint32>(reinterpret_cast<const uchar*>(
+            m_single_recvbuf + bytesRead)); // 数据长度
+        bytesRead += sizeof(qint32);
+        QByteArray data(reinterpret_cast<const char*>(m_single_recvbuf + bytesRead), dataLength); // 数据
+        bytesRead += dataLength;
+        m_recvbuf.beginIndex = (m_recvbuf.beginIndex + bytesRead) % m_recvbuf.capacity; // 更新beginIndex
 
+        QString filename = QString::fromUtf8(fileNameByte);
         if (!m_filemap.contains(filename)) {
+            // 首次要创建文件
             if (!m_dir->exists("serverFile")) {
                 m_dir->mkdir("serverFile");
             }
@@ -74,22 +108,22 @@ void FileClientHandler::parseFileData()
         }
 
         FileInfo* fileinfo = m_filemap.value(filename);
-        fileinfo->file->write(fileData);
-        fileinfo->haveWrite += fileData.size();
+        fileinfo->file->write(data);
+        fileinfo->haveWrite += data.size();
         if (timer.elapsed() >= 500) {
             timer.restart();
-            qDebug() << "已经写入: " << fileinfo->haveWrite << " 还剩: " << -fileinfo->haveWrite + totalSize;
+            qDebug() << "已经写入: " << fileinfo->haveWrite << " 还剩: " << -fileinfo->haveWrite + packageSize;
         }
-        QMutexLocker locker(_mutex);
-        m_recvbuf.remove(0, sizeof(char) + sizeof(qint32) + sizeof(qint32) + bytefilename.size() + fileData.size() + 2 * sizeof(qint32));
 
         if (fileinfo->haveWrite == totalSize) {
-            qDebug() << tr("%1 文件上传成功").arg(filename);
-            delete fileinfo->file;
-            fileinfo->file = nullptr;
             m_filemap.remove(filename);
-            delete fileinfo;
-            fileinfo = nullptr;
+            qDebug() << tr("%1 文件上传成功").arg(filename);
+            if (fileinfo) {
+                if (fileinfo->file) {
+                    delete fileinfo->file;
+                }
+                delete fileinfo;
+            }
         }
     }
 }

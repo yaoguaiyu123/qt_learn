@@ -2,7 +2,6 @@
 #include "fileclienthandler.h"
 #include <QDebug>
 #include <QTcpSocket>
-#include "parsefiledata.h"
 
 FileServer::FileServer(QObject* parent)
     : QTcpServer(parent)
@@ -13,7 +12,7 @@ FileServer::FileServer(QObject* parent)
 
 FileServer::~FileServer()
 {
-    // QThreadPool::globalInstance()->waitForDone();
+    QThreadPool::globalInstance()->waitForDone();
 }
 
 bool FileServer::startFileServer(const QHostAddress& address, quint16 port)
@@ -25,11 +24,11 @@ bool FileServer::startFileServer(const QHostAddress& address, quint16 port)
 // 接收
 void FileServer::incomingConnection(qintptr socketDescriptor)
 {
-    qDebug() << "接收到新的文件上传请求";
-    FileClientHandler* clientHandler = new FileClientHandler(socketDescriptor);
-    QThread* thread = new QThread(this);
+    qDebug() << "接收到新用户的上传请求";
+    QTcpSocket* socket = new QTcpSocket;
+    socket->setSocketDescriptor(socketDescriptor);
+    FileClientHandler* clientHandler = new FileClientHandler(socket);
+    QThread* thread = new QThread;
     clientHandler->moveToThread(thread);
     thread->start();
-    ParseFileData* parseFileData = new ParseFileData(clientHandler);
-    parseFileData->start();  //开启包解析线程
 }

@@ -5,9 +5,12 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <QFileInfo>
 #include <QRandomGenerator>
+#include <QtEndian>
+#include <QMutex>
+#include <QMutexLocker>
 
 namespace {
-qint64 maxBlockSize = 1024;   //一次读取的最大限制
+qint64 maxBlockSize = 512;   //一次读取的最大限制
 
 QString generateRandomAlphanumeric(int length) {
     QString alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -33,10 +36,8 @@ qint64 generateRandomTenDigitNumber() {
 
 FileClient::FileClient(QObject* parent)
     : QObject(parent)
-    , toWrite(0)
-    , haveWritten(0)
 {
-    connect(&socket, &QTcpSocket::bytesWritten, this, &FileClient::handleBytesWritten);
+    m_sendbuf = new uchar(8 * 4 * 1024);
 }
 
 bool FileClient::connectToServer(const QString& host, quint16 port)
@@ -52,19 +53,10 @@ bool FileClient::connectToServer(const QString& host, quint16 port)
 }
 
 
-void FileClient::handleBytesWritten(qint64 size)
-{
-    haveWritten += size;
-    if (haveWritten == toWrite) {
-        qDebug() << "确认已经写入完毕";
-        deleteLater(); // 释放内存
-    }
-}
-
-
-// 封装一个包进行发送,依次写入包的开头,包的大小，文件名，文件数据
+/// 封装一个包进行发送,依次写入包的开头,包的大小，文件大小,文件名长度，文件名，文件数据长度，文件数据
 void FileClient::uploadFile(const QString& filePath)
 {
+    qDebug() << "执行上传";
     QtConcurrent::run([this, filePath]() {
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly)) {
@@ -76,33 +68,37 @@ void FileClient::uploadFile(const QString& filePath)
         qint32 totalSize = file.size();
         QString filename = QFileInfo(filePath).fileName();
         QString newFileName = generateRandomAlphanumeric(7) + "_" + filename;
-        QByteArray namebyte = newFileName.toLatin1();
-        int times = 0;
+        QByteArray namebyteArray = newFileName.toUtf8();
         while (offset < totalSize) {
-            ++times;
-            if (times == 20) {
-                times = 0;
-                QThread::msleep(5);
-            }
+            // QThread::msleep(1);
             file.seek(offset);
-            QByteArray buffer;
-            QDataStream stream(&buffer, QIODevice::WriteOnly);
-            stream.setVersion(QDataStream::Qt_6_5);
+            QByteArray dataBlock = file.read(maxBlockSize); // 读出文件数据
+            qint32 size = sizeof(char) + sizeof(qint32) * 4 + namebyteArray.length() + dataBlock.length(); // 计算包的大小
+            quint64 bytestowrite = 0;
+            {
+                //对sendBuf的写入做互斥
+                QMutexLocker locker(&mutex);
 
-            QByteArray dataBlock = file.read(maxBlockSize);
-            qint32 size = sizeof(char) + sizeof(qint32) * 4 + namebyte.size() + dataBlock.size();
-
-            stream << beginC;
-            stream << size;   //当前包的长度
-            stream << totalSize;
-            stream << namebyte;
-            stream << dataBlock;
-
-            QMetaObject::invokeMethod(this, "writeByteArray", Qt::QueuedConnection,
-                Q_ARG(QByteArray, buffer));
-
+                m_sendbuf[bytestowrite++] = beginC; // 开头
+                qToBigEndian<qint32>(size, m_sendbuf + bytestowrite); // 包的大小
+                bytestowrite += sizeof(qint32);
+                qToBigEndian<qint32>(totalSize, m_sendbuf + bytestowrite); // 文件总大小
+                bytestowrite += sizeof(qint32);
+                qToBigEndian<qint32>(namebyteArray.length(), m_sendbuf + bytestowrite); // 名字长度
+                bytestowrite += sizeof(qint32);
+                for (int i = 0; i < namebyteArray.length(); ++i) {
+                    m_sendbuf[bytestowrite++] = static_cast<uchar>(namebyteArray[i]); // 文件名
+                }
+                qToBigEndian<qint32>(dataBlock.length(), m_sendbuf + bytestowrite); // 数据长度
+                bytestowrite += sizeof(qint32);
+                for (int i = 0; i < dataBlock.length(); ++i) {
+                    m_sendbuf[bytestowrite++] = static_cast<uchar>(dataBlock[i]); // 数据
+                }
+                // 异步调用
+                QMetaObject::invokeMethod(this, "writeByteArray", Qt::QueuedConnection, Q_ARG(qint32, bytestowrite)); // 文件偏移
+            }
             offset += dataBlock.size();
-            qDebug() << "Offset: " << offset << " 当前包大小: " << size;
+            // qDebug() << offset;
         }
 
         file.close();
@@ -111,12 +107,22 @@ void FileClient::uploadFile(const QString& filePath)
 
 
 
-qint64 FileClient::writeByteArray(const QByteArray& byteArray)
+
+qint64 FileClient::writeByteArray(qint32 packageSize)
 {
-    return socket.write(byteArray);
+    qint32 pacHaveWritten = 0;
+    qint32 oneTimeWrite;
+    do {
+        oneTimeWrite = socket.write(reinterpret_cast<const char*>
+            (m_sendbuf + pacHaveWritten), packageSize - pacHaveWritten);
+        socket.waitForBytesWritten();
+        pacHaveWritten += oneTimeWrite;
+    } while (pacHaveWritten < packageSize);
+    return pacHaveWritten;
 }
 
 
 
 FileClient::~FileClient(){
+    delete[] m_sendbuf;
 }

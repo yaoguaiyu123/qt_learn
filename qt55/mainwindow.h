@@ -24,5 +24,6 @@ private slots:
 
 private:
     Ui::topWidget* ui;
+    FileClient* client;
 };
 #endif // MAINWINDOW_H
